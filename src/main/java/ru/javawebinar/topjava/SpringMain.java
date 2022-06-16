@@ -27,14 +27,12 @@ public class SpringMain {
             System.out.println(mealRestController.getAll());
 
             List<MealTo> filteredMealsWithExcess =
-                    mealRestController.getBetween(
+                    mealRestController.getBetweenfOpen(
                             LocalDate.of(2020, Month.JANUARY, 30), LocalTime.of(7, 0),
                             LocalDate.of(2020, Month.JANUARY, 31), LocalTime.of(11, 0));
             filteredMealsWithExcess.forEach(System.out::println);
             System.out.println();
-            System.out.println(mealRestController.getBetween(null, null, null, null));
-        } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(mealRestController.getBetweenfOpen(null, null, null, null));
         }
     }
 }

@@ -15,14 +15,14 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
 import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
+import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
 
 @Controller
 public class MealRestController {
     private static final Logger log = LoggerFactory.getLogger(MealServlet.class);
 
-    private MealService service;
+    private final MealService service;
 
     public MealRestController(MealService service) {
         this.service = service;
@@ -31,26 +31,26 @@ public class MealRestController {
     public Meal create(Meal meal) {
         int userId = SecurityUtil.authUserId();
         checkNew(meal);
-        log.info("create {} for user", meal, userId);
-        return service.create(meal, userId);
+        log.info("create {} for user", userId);
+        return service.create(userId, meal);
     }
 
     public void update(Meal meal, int id) {
         int userId = SecurityUtil.authUserId();
         assureIdConsistent(meal, id);
-        log.info("update {} for user", meal, userId);
-        service.create(meal, userId);
+        log.info("update {} for user", userId);
+        service.update(meal, userId);
     }
 
     public void delete(int id) {
         int userId = SecurityUtil.authUserId();
-        log.info("update {} for user", id, userId);
+        log.info("update {} for user", userId);
         service.delete(id, userId);
     }
 
     public Meal get(int id) {
         int userId = SecurityUtil.authUserId();
-        log.info("getMeal {}", id, userId);
+        log.info("getMeal {}", id);
         return service.get(id, userId);
     }
 
@@ -60,12 +60,10 @@ public class MealRestController {
         return MealsUtil.getTos(service.getAll(userId), SecurityUtil.authUserCaloriesPerDay());
     }
 
-    public List<MealTo> getBetween(@Nullable LocalDate startDate, @Nullable LocalTime startTime,
+    public List<MealTo> getBetweenfOpen(@Nullable LocalDate startDate, @Nullable LocalTime startTime,
                                    @Nullable LocalDate endDate, @Nullable LocalTime endTime) {
         int userId = SecurityUtil.authUserId();
-
         log.info("getBetween dates({} - {}) time({} - {}) for user {}", startDate, endDate, startTime, endTime, userId);
-
         List<Meal> mealsDateFiltered = service.getBetweenInclusive(startDate, endDate, userId);
         return MealsUtil.getFilteredTos(mealsDateFiltered, SecurityUtil.authUserCaloriesPerDay(), startTime, endTime);
     }
