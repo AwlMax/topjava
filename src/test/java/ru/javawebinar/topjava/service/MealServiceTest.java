@@ -3,15 +3,20 @@ package ru.javawebinar.topjava.service;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.javawebinar.topjava.MealTestData;
 import ru.javawebinar.topjava.model.Meal;
+import ru.javawebinar.topjava.model.Role;
+import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 
 import static org.junit.Assert.assertThrows;
@@ -39,6 +44,13 @@ public class MealServiceTest {
     }
 
     @Test
+    public void duplicateDateTimeCreate() {
+        assertThrows(DataAccessException.class, () ->
+                service.create(new Meal(null, LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0),
+                "new description", 1000), USER_ID));
+    }
+
+    @Test
     public void get() {
         Meal meal = service.get(MEAL_ID, USER_ID);
         assertMatch(meal, MealTestData.meal1);
@@ -56,15 +68,16 @@ public class MealServiceTest {
     }
 
     @Test
-    public void deletedNotFound() {
-        assertThrows(NotFoundException.class, () -> service.delete(NOT_FOUND, ADMIN_ID));
+    public void deleteNonFound() {
+
+        assertThrows(NotFoundException.class, () -> service.get(MEAL_ID, USER_ID));
     }
 
     @Test
     public void getBetweenInclusive() {
         assertMatch(service.getBetweenInclusive(
-                        LocalDate.of(2020, 1, 30),
-                        LocalDate.of(2020, 1, 30), USER_ID),
+                        LocalDate.of(2020, Month.JANUARY, 30),
+                        LocalDate.of(2020, Month.JANUARY, 30), USER_ID),
                 meal3, meal2, meal1);
     }
 
