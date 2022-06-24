@@ -11,20 +11,18 @@ import ru.javawebinar.topjava.MealTestData;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
+import java.time.LocalDate;
 import java.util.List;
-
-import static ru.javawebinar.topjava.MealTestData.MEAL_ID;
-import static ru.javawebinar.topjava.MealTestData.getNew;
-import static ru.javawebinar.topjava.UserTestData.NOT_FOUND;
-import static ru.javawebinar.topjava.UserTestData.USER_ID;
 
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.MealTestData.*;
+import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
+import static ru.javawebinar.topjava.UserTestData.USER_ID;
 
 @ContextConfiguration({"classpath:spring/spring-app.xml",
         "classpath:spring/spring-db.xml"})
 @RunWith(SpringRunner.class)
-@Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTS-8"))
+@Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
 
     @Autowired
@@ -43,7 +41,7 @@ public class MealServiceTest {
     @Test
     public void get() {
         Meal meal = service.get(MEAL_ID, USER_ID);
-        assertMatch(meal, MealTestData.meal);
+        assertMatch(meal, MealTestData.meal1);
     }
 
     @Test
@@ -64,8 +62,10 @@ public class MealServiceTest {
 
     @Test
     public void getBetweenInclusive() {
-        List<Meal> filtered = service.getBetweenInclusive(START_DATE, END_DATE, USER_ID);
-        assertMatch(filtered, mealsForFilter);
+        assertMatch(service.getBetweenInclusive(
+                        LocalDate.of(2020, 1, 30),
+                        LocalDate.of(2020, 1, 30), USER_ID),
+                meal3, meal2, meal1);
     }
 
     @Test

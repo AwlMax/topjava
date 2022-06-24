@@ -2,61 +2,40 @@ package ru.javawebinar.topjava;
 
 import ru.javawebinar.topjava.model.Meal;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Month;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
+import static java.time.LocalDateTime.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static ru.javawebinar.topjava.model.AbstractBaseEntity.START_SEQ;
 
 public class MealTestData {
-    public static final int USER_ID = START_SEQ;
-    public static final int ADMIN_ID = START_SEQ + 1;
     public static final int MEAL_ID = START_SEQ + 2;
     public static final int NOT_FOUND = 10;
-    public static final LocalDate START_DATE = LocalDate.of(2020, Month.JANUARY, 31);
-    public static final LocalDate END_DATE = LocalDate.of(2020, Month.JANUARY, 31);
+    public static final int ADMIN_MEAL_ID = START_SEQ + 9;
 
-    public static final Meal meal = new Meal(MEAL_ID, LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500);
-
-    public static final List<Meal> mealsForFilter = Arrays.asList(
-            new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 0, 0), "Еда на граничное значение", 100),
-            new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 10, 0), "Завтрак", 1000),
-            new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0), "Обед", 500),
-            new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410)
-    );
-
-    public static final List<Meal> meals = Arrays.asList(
-            new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500),
-            new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед", 1000),
-            new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0), "Ужин", 500),
-            new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 0, 0), "Еда на граничное значение", 100),
-            new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 10, 0), "Завтрак", 1000),
-            new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0), "Обед", 500),
-            new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410)
-    );
-
-    static {
-        Collections.sort(meals, (meal1, t1) -> t1.getDateTime().compareTo(meal1.getDateTime()));
-    }
+    public static final Meal meal1 = new Meal(MEAL_ID, of(2020, 1, 30, 10, 0), "Завтрак", 500);
+    public static final Meal meal2 = new Meal(MEAL_ID + 1, of(2020, 1, 30, 13, 0), "Обед", 1000);
+    public static final Meal meal3 = new Meal(MEAL_ID + 2, of(2020, 1, 30, 20, 0), "Ужин", 500);
+    public static final Meal meal4 = new Meal(MEAL_ID + 3, of(2020, 1, 31, 0, 0), "Еда на граничное значение", 100);
+    public static final Meal meal5 = new Meal(MEAL_ID + 4, of(2020, 1, 31, 10, 0), "Завтрак", 500);
+    public static final Meal meal6 = new Meal(MEAL_ID + 5, of(2020, 1, 31, 13, 0), "Обед", 1000);
+    public static final Meal meal7 = new Meal(MEAL_ID + 6, of(2020, 1, 31, 20, 0), "Ужин", 510);
+    public static final List<Meal> meals = Arrays.asList(meal7, meal6, meal5, meal4, meal3, meal2, meal1);
+    public static final Meal adminMeal1 = new Meal(ADMIN_MEAL_ID, of(2020, 1, 31, 14, 0), "Админ ланч", 510);
+    public static final Meal adminMeal2 = new Meal(ADMIN_MEAL_ID + 1, of(2020, 1, 31, 21, 0), "Админ ужин", 1500);
 
     public static Meal getNew() {
-        return new Meal(null, LocalDateTime.now(), "description", 500);
+        return new Meal(null, of(2020, 2, 1, 14, 0), "new description", 200);
     }
 
     public static Meal getUpdated() {
-        Meal updated = new Meal(meal);
-        updated.setDateTime(LocalDateTime.of(2020, Month.JANUARY, 29, 20, 0));
-        updated.setDescription("Ужин");
-        updated.setCalories(500);
-        return updated;
+        return new Meal(MEAL_ID, meal1.getDateTime().plus(2, ChronoUnit.MINUTES), String.join("_updated"), 200);
     }
 
     public static void assertMatch(Meal actual, Meal expected) {
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
     }
 
     public static void assertMatch(Iterable<Meal> actual, Meal... expected) {
@@ -64,6 +43,6 @@ public class MealTestData {
     }
 
     public static void assertMatch(Iterable<Meal> actual, Iterable<Meal> expected) {
-        assertThat(actual).usingElementComparatorIgnoringFields("id").isEqualTo(expected);
+        assertThat(actual).usingRecursiveFieldByFieldElementComparator().isEqualTo(expected);
     }
 }
