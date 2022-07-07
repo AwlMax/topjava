@@ -29,9 +29,6 @@ public abstract class BaseServiceTest {
 
     private static final StringBuilder results = new StringBuilder();
 
-    @Autowired
-    private CacheManager cacheManager;
-
     @Rule
     // http://stackoverflow.com/questions/14892125/what-is-the-best-practice-to-determine-the-execution-time-of-the-bussiness-relev
     public final Stopwatch stopwatch = new Stopwatch() {
@@ -42,11 +39,6 @@ public abstract class BaseServiceTest {
             log.info(result + " ms\n");
         }
     };
-
-    @Before
-    public void setup() {
-        cacheManager.getCache("users").clear();
-    }
 
     @AfterClass
     public static void printResult() {
